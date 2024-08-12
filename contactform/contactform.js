@@ -47,6 +47,13 @@ jQuery(document).ready(function($) {
             }
             break;
 
+          case 'phone':
+            exp = new RegExp('[+,0-9]{9,14}');
+            if (!exp.test(i.val())) {
+              ferror = ierror = true;
+            }
+            break;
+
           case 'regexp':
             exp = new RegExp(exp);
             if (!exp.test(i.val())) {
@@ -89,11 +96,17 @@ jQuery(document).ready(function($) {
       }
     });
     if (ferror) return false;
-    else var str = $(this).serialize();
-    var action = $(this).attr('action');
-    if( ! action ) {
-      action = 'contactform/contactform.php';
-    }
+    else var formData = $(this).serializeArray();
+
+    var jsonData = {};
+    $.map(formData, function(item) {
+        jsonData[item.name] = item.value;
+    });
+    
+    var str = JSON.stringify(jsonData);
+    
+    var action = 'contactform/sendmail.php';
+      
     $.ajax({
       type: "POST",
       url: action,
